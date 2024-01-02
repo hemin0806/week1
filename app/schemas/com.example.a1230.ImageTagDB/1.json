@@ -1,31 +1,31 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 2,
-    "identityHash": "8b0cad0f00a7c0b0270530b1a8e65330",
+    "version": 1,
+    "identityHash": "71e974d3bbd8dab260193ada51ab5f03",
     "entities": [
       {
-        "tableName": "Department",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dept_id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT)",
+        "tableName": "ImageTag",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`tag_id` INTEGER, `tag` TEXT, PRIMARY KEY(`tag_id`))",
         "fields": [
           {
-            "fieldPath": "dept_id",
-            "columnName": "dept_id",
+            "fieldPath": "tag_id",
+            "columnName": "tag_id",
             "affinity": "INTEGER",
             "notNull": false
           },
           {
-            "fieldPath": "name",
-            "columnName": "name",
+            "fieldPath": "tag",
+            "columnName": "tag",
             "affinity": "TEXT",
             "notNull": false
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "dept_id"
+            "tag_id"
           ],
-          "autoGenerate": true
+          "autoGenerate": false
         },
         "indices": [],
         "foreignKeys": []
@@ -34,7 +34,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8b0cad0f00a7c0b0270530b1a8e65330')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '71e974d3bbd8dab260193ada51ab5f03')"
     ]
   }
 }

@@ -2,23 +2,28 @@ package com.example.a1230;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
-public class ImageGridAdapter extends ArrayAdapter<Integer> {
-    public ImageGridAdapter(Context context, int[] imageResources) {
-        super(context, 0, toIntegerList(imageResources));
-    }
+import androidx.fragment.app.FragmentManager;
 
-    private static Integer[] toIntegerList(int[] array) {
-        Integer[] result = new Integer[array.length];
-        for (int i = 0; i < array.length; i++) {
-            result[i] = array[i];
-        }
-        return result;
+import com.bumptech.glide.Glide;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ImageGridAdapter extends ArrayAdapter<Image> {
+    private ArrayList<Image> images;
+    private Context context;
+    private FragmentManager fragmentManager;
+    public ImageGridAdapter(ArrayList<Image> images, Context context, FragmentManager fragmentManager) {
+        super(context, 0, (List<Image>) images);
+        this.fragmentManager = fragmentManager;
+        this.context = context;
     }
 
     @Override
@@ -38,11 +43,14 @@ public class ImageGridAdapter extends ArrayAdapter<Integer> {
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         }
 
-        // 현재 위치(position)의 이미지 리소스를 가져와서 설정합니다.
-        imageView.setImageResource(getItem(position));
+        // 현재 위치(position)의 이미지 리소스를 가져와서 설정.
+        Image image = getItem(position);
+        String uri = image.getUri();
+        Log.w("image uri", uri);
+        Glide.with(context)
+                .load(uri)
+                .into(imageView);
 
         return imageView;
     }
-
-
 }

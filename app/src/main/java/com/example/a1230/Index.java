@@ -1,5 +1,6 @@
 package com.example.a1230;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -47,11 +48,11 @@ public class Index extends Fragment {
         // Inflate the layout for this fragment using data binding
         view = inflater.inflate(R.layout.fragment_index, container, false);
         // Access the TextView from the binding
+
         LinearLayout PageLink1View = view.findViewById(R.id.PageLink1);
         LinearLayout PageLink2View = view.findViewById(R.id.PageLink2);
         LinearLayout PageLink3View = view.findViewById(R.id.PageLink3);
-
-
+        Context context = getActivity().getApplicationContext();
 
         // Set OnClickListener on the TextView
         PageLink1View.setOnClickListener(new View.OnClickListener() {
@@ -59,7 +60,7 @@ public class Index extends Fragment {
             public void onClick(View view) {
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.fragment_container, new PhoneBook(fragmentManager, getActivity().getApplicationContext()));
+                transaction.replace(R.id.fragment_container, new PhoneBook(fragmentManager, context));
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
@@ -70,7 +71,7 @@ public class Index extends Fragment {
             public void onClick(View view) {
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.fragment_container, new ImageGridFragment());
+                transaction.replace(R.id.fragment_container, new ImageGridFragment(fragmentManager, context));
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
@@ -81,7 +82,7 @@ public class Index extends Fragment {
             public void onClick(View view) {
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.fragment_container, new DepartmentSelectFragment());
+                transaction.replace(R.id.fragment_container, new DepartmentSelectFragment(fragmentManager, context));
                 transaction.addToBackStack(null);
                 transaction.commit();
             }

@@ -1,5 +1,6 @@
 package com.example.a1230;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.appcompat.widget.AppCompatButton;
@@ -14,8 +15,11 @@ import android.view.ViewGroup;
 
 public class DepartmentSelectFragment extends Fragment {
 
-    public DepartmentSelectFragment() {
-        // Required empty public constructor
+    private Context context;
+    private FragmentManager fragmentManager;
+    public DepartmentSelectFragment(FragmentManager fragmentManager, Context context) {
+        this.fragmentManager = fragmentManager;
+        this.context = context;
     }
 
     @Override
@@ -35,9 +39,8 @@ public class DepartmentSelectFragment extends Fragment {
         management_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.fragment_container, new TodoListFragment());
+                transaction.replace(R.id.fragment_container, new TodoListFragment(fragmentManager, context,0));
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
@@ -46,9 +49,8 @@ public class DepartmentSelectFragment extends Fragment {
         general_affairs_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.fragment_container, new TodoListFragment());
+                transaction.replace(R.id.fragment_container, new TodoListFragment(fragmentManager, context,1));
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
@@ -57,9 +59,8 @@ public class DepartmentSelectFragment extends Fragment {
         accounting_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.fragment_container, new TodoListFragment());
+                transaction.replace(R.id.fragment_container, new TodoListFragment(fragmentManager, context,2));
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
@@ -68,9 +69,8 @@ public class DepartmentSelectFragment extends Fragment {
         machinary_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.fragment_container, new TodoListFragment());
+                transaction.replace(R.id.fragment_container, new TodoListFragment(fragmentManager, context,3));
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
@@ -79,9 +79,8 @@ public class DepartmentSelectFragment extends Fragment {
         technical_research_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.fragment_container, new TodoListFragment());
+                transaction.replace(R.id.fragment_container, new TodoListFragment(fragmentManager, context,4));
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
@@ -90,9 +89,8 @@ public class DepartmentSelectFragment extends Fragment {
         human_resources_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.fragment_container, new TodoListFragment());
+                transaction.replace(R.id.fragment_container, new TodoListFragment(fragmentManager, context,5));
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
@@ -101,9 +99,8 @@ public class DepartmentSelectFragment extends Fragment {
         system_management_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.fragment_container, new TodoListFragment());
+                transaction.replace(R.id.fragment_container, new TodoListFragment(fragmentManager, context,6));
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
@@ -112,9 +109,8 @@ public class DepartmentSelectFragment extends Fragment {
         facility_management_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.fragment_container, new TodoListFragment());
+                transaction.replace(R.id.fragment_container, new TodoListFragment(fragmentManager, context,7));
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
@@ -122,6 +118,4 @@ public class DepartmentSelectFragment extends Fragment {
 
         return view;
     }
-
-
 }

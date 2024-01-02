@@ -9,8 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -18,8 +16,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 
 public class PhoneBook extends Fragment {
 
@@ -52,69 +47,12 @@ public class PhoneBook extends Fragment {
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-        boolean use_db = true;
         binding = PhonebookBinding.inflate(inflater, container, false);
         view = inflater.inflate(R.layout.phonebook, container, false);
         personDB = PersonDB.getInstance(getContext());
-
-        //use implemented db
-        if(use_db) {
-            //create thread to access DB
-            ArrayList<Person> persons = (ArrayList<Person>)PersonDB.getInstance(context).personDao().getAll();
-            PhoneBookAdapter phoneBookAdapter = new PhoneBookAdapter(persons, fragmentManager);
-            //phoneBookAdapter.notifyDataSetChanged();
-            RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.PhoneBookRecyclerview);
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-            recyclerView.setLayoutManager(linearLayoutManager);  // LayoutManager 설정
-            recyclerView.setAdapter(phoneBookAdapter);
-            TextView numberOfPeopleTextView = view.findViewById(R.id.NumberOfPeopleTextView);
-            numberOfPeopleTextView.setText("Number of Employees : " + String.valueOf(persons.size()));
-
-            SearchView phoneBookSearchView = view.findViewById(R.id.PhoneBookSearchView);
-            phoneBookSearchView.setSubmitButtonEnabled(true);
-            phoneBookSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String text) {
-                    ArrayList<Person> searchResult = (ArrayList<Person>)PersonDB.getInstance(context)
-                            .personDao().searchNameByText(text);
-                    PhoneBookAdapter newPhoneBookAdapter = new PhoneBookAdapter(searchResult, fragmentManager);
-                    recyclerView.setAdapter(newPhoneBookAdapter);
-                    numberOfPeopleTextView.setText("Number of Search Result: " + String.valueOf(searchResult.size()));
-                    return true;
-                }
-                @Override
-                public boolean onQueryTextChange(String newText) {
-                    ArrayList<Person> searchResult = (ArrayList<Person>)PersonDB.getInstance(context)
-                            .personDao().searchNameByText(newText);
-                    PhoneBookAdapter newPhoneBookAdapter = new PhoneBookAdapter(searchResult, fragmentManager);
-                    recyclerView.setAdapter(newPhoneBookAdapter);
-                    return true;
-                }
-            });
-
-            Spinner phoneBookDeptSpinner = (Spinner) view.findViewById(R.id.PhoneBookDeptSpinner);
-            ArrayAdapter phoneBookDeptSpnAdapter = ArrayAdapter.createFromResource(getActivity(),
-                    R.array.depts, android.R.layout.simple_spinner_item);
-            phoneBookDeptSpnAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            phoneBookDeptSpinner.setAdapter(phoneBookDeptSpnAdapter);
-            phoneBookDeptSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    if(i > 0) {
-                        Integer dept_id = i-1;
-                        ArrayList<Person> filterResult = (ArrayList<Person>) personDB.personDao().selectAllPersonsInDept(dept_id);
-                        PhoneBookAdapter newPhoneBookAdapter = new PhoneBookAdapter(filterResult, fragmentManager);
-                        recyclerView.setAdapter(newPhoneBookAdapter);
-                    } else {
-                        PhoneBookAdapter newPhoneBookAdapter = new PhoneBookAdapter(persons, fragmentManager);
-                        recyclerView.setAdapter(newPhoneBookAdapter);
-                    }
-                }
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {}
-            });
-        }
-        else { //use json file
+        ArrayList<Person> persons = (ArrayList<Person>)PersonDB.getInstance(context).personDao().getAll();
+        // if db is empry, access json file to get person list
+        if(persons.size() == 0) {
             AssetManager assetManager= getResources().getAssets();
             try {
                 InputStream is= assetManager.open("JSON/phonebook.json");
@@ -132,7 +70,7 @@ public class PhoneBook extends Fragment {
 
                 String s="";
                 int n = PBData.length();
-                ArrayList<Person> persons = new ArrayList<Person>();
+                ArrayList<Person> persons_Got = new ArrayList<Person>();
                 for(int i=0; i<n;i++){
                     JSONObject jo=PBData.getJSONObject(i);
                     Integer id = Integer.parseInt(jo.getString("id"));
@@ -140,22 +78,14 @@ public class PhoneBook extends Fragment {
                     String phonenum= jo.getString("phone");
                     Integer gender= jo.getString("gender").equals("female") ? 0 : 1;
                     Integer dept= Integer.parseInt(jo.getString("department"));
-                    persons.add(new Person(id, name, gender, phonenum, dept));
+                    persons_Got.add(new Person(id, name, gender, phonenum, dept));
                 }
 
-                persons.sort((x, y) -> {
-                    if(x.getDeptNum() == y.getDeptNum())
-                    {
-                        return x.getName().compareTo(y.getName());}
-                    else {
-                        return x.getDeptNum().compareTo(y.getDeptNum());
-                    }
-                });
                 class InsertRunnable implements Runnable {
                     @Override
                     public void run() {
                         try {
-                            personDB.personDao().insertAll(persons);
+                            personDB.personDao().insertAll(persons_Got);
 
                         } catch (Exception e) {
                             Log.w("error in new thread2", e);
@@ -163,17 +93,71 @@ public class PhoneBook extends Fragment {
                     }
                 } Thread t = new Thread(new InsertRunnable()); t.start();
 
-                TextView numberOfPeopleTextView = view.findViewById(R.id.NumberOfPeopleTextView);
-                numberOfPeopleTextView.setText("Number of Employees : " + String.valueOf(persons.size()));
-                RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.PhoneBookRecyclerview);
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
-                recyclerView.setLayoutManager(linearLayoutManager);  // LayoutManager 설정
-
-                PhoneBookAdapter phoneBookAdapter = new PhoneBookAdapter(persons, fragmentManager);
-                recyclerView.setAdapter(phoneBookAdapter);// 어댑터 설정
-
             } catch (IOException e) {e.printStackTrace();} catch (JSONException e) {e.printStackTrace(); }
         }
+
+        //create thread to access DB
+        persons.sort((x, y) -> {
+            if(x.getDeptNum() == y.getDeptNum())
+            {
+                return x.getName().compareTo(y.getName());}
+            else {
+                return x.getDeptNum().compareTo(y.getDeptNum());
+            }
+        });
+        PhoneBookAdapter phoneBookAdapter = new PhoneBookAdapter(persons, fragmentManager);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.PhoneBookRecyclerview);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        recyclerView.setLayoutManager(linearLayoutManager);  // LayoutManager 설정
+        recyclerView.setAdapter(phoneBookAdapter);
+        TextView numberOfPeopleTextView = view.findViewById(R.id.NumberOfPeopleTextView);
+        numberOfPeopleTextView.setText("Number of Employees : " + String.valueOf(persons.size()));
+
+        SearchView phoneBookSearchView = view.findViewById(R.id.PhoneBookSearchView);
+        phoneBookSearchView.setSubmitButtonEnabled(true);
+        phoneBookSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String text) {
+                ArrayList<Person> searchResult = (ArrayList<Person>) PersonDB.getInstance(context)
+                        .personDao().searchNameByText(text);
+                PhoneBookAdapter newPhoneBookAdapter = new PhoneBookAdapter(searchResult, fragmentManager);
+                recyclerView.setAdapter(newPhoneBookAdapter);
+                numberOfPeopleTextView.setText("Number of Search Result: " + String.valueOf(searchResult.size()));
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ArrayList<Person> searchResult = (ArrayList<Person>) PersonDB.getInstance(context)
+                        .personDao().searchNameByText(newText);
+                PhoneBookAdapter newPhoneBookAdapter = new PhoneBookAdapter(searchResult, fragmentManager);
+                recyclerView.setAdapter(newPhoneBookAdapter);
+                return true;
+            }
+        });
+
+        Spinner phoneBookDeptSpinner = (Spinner) view.findViewById(R.id.PhoneBookDeptSpinner);
+        ArrayAdapter phoneBookDeptSpnAdapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.depts, android.R.layout.simple_spinner_item);
+        phoneBookDeptSpnAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        phoneBookDeptSpinner.setAdapter(phoneBookDeptSpnAdapter);
+        phoneBookDeptSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i > 0) {
+                    Integer dept_id = i - 1;
+                    ArrayList<Person> filterResult = (ArrayList<Person>) personDB.personDao().selectAllPersonsInDept(dept_id);
+                    PhoneBookAdapter newPhoneBookAdapter = new PhoneBookAdapter(filterResult, fragmentManager);
+                    recyclerView.setAdapter(newPhoneBookAdapter);
+                } else {
+                    PhoneBookAdapter newPhoneBookAdapter = new PhoneBookAdapter(persons, fragmentManager);
+                    recyclerView.setAdapter(newPhoneBookAdapter);
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
 
         return view;
     }

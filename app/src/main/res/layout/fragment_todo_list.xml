@@ -22,10 +22,13 @@
         android:layout_marginTop="8dp"
         android:text="Add"/>
 
+
     <ListView
         android:id="@+id/todoListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/addButton"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        tools:listitem="@layout/todo_list_item"/>
+
 </RelativeLayout>

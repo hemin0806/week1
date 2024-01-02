@@ -9,18 +9,15 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Person.class}, version = 1)
-public abstract class PersonDB extends RoomDatabase {
-    private static PersonDB instance = null;
-    public abstract PersonDao personDao();
+@Database(entities = {Image.class}, version = 1)
+public abstract class ImageDB extends RoomDatabase {
+    private static ImageDB instance = null;
+    public abstract ImageDao imageDao();
 
-    public static boolean isInstanceNull(Context context) {
-        return (instance == null);
-    }
-    public static PersonDB getInstance(Context context) {
+    public static ImageDB getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(),
-                    PersonDB.class, "persons.db")
+                            ImageDB.class, "departments.db")
                     .addMigrations(
 
                     )
@@ -29,9 +26,6 @@ public abstract class PersonDB extends RoomDatabase {
         }
         return instance;
     }
-    //public static createOpenHelper() {
-
-    //}
     public static void destroyInstance() {
         instance = null;
     }

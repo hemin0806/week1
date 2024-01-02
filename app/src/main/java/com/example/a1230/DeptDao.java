@@ -1,24 +1,27 @@
 package com.example.a1230;
 
+import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Dao
 public interface DeptDao {
     @Query("SELECT * FROM Department")
-    ArrayList<Department> getAll();
+    List<Department> getAll();
 
     @Query("SELECT * FROM Department WHERE dept_id IN (:deptIds)")
-    ArrayList<Department> loadAllByIds(int[] deptIds);
+    List<Department> loadAllByIds(int[] deptIds);
 
-    @Query("SELECT * FROM TodoItem " +
-            "WHERE TodoItem.dept_id == (:deptId)")
-    ArrayList<TodoItem> selectAllTodoItemsInDept(int deptId);
     @Insert
     void insertAll(Department... depts);
+
+    @Update
+    void update(Department dept);
 
     @Delete
     void delete(Department dept);
